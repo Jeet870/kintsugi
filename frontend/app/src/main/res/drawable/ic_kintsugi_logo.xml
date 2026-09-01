@@ -1,0 +1,61 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- 1. Outer Organic Purple Petal Star -->
+    <path android:pathData="M 50,6 C 50,30 30,50 6,50 C 30,50 50,70 50,94 C 50,70 70,50 94,50 C 70,50 50,30 50,6 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0"
+                android:startY="0"
+                android:endX="100"
+                android:endY="100"
+                android:type="linear">
+                <item android:color="#FF8B5CF6" android:offset="0.0" />
+                <item android:color="#FF7C3AED" android:offset="0.6" />
+                <item android:color="#FF6D28D9" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- 2. Interlocking Vibrant Purple Inner Star -->
+    <path android:pathData="M 50,14 C 50,34 34,50 14,50 C 34,50 50,66 50,86 C 50,66 66,50 86,50 C 66,50 50,34 50,14 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="100"
+                android:startY="0"
+                android:endX="0"
+                android:endY="100"
+                android:type="linear">
+                <item android:color="#E6C084FC" android:offset="0.0" />
+                <item android:color="#E6A855F7" android:offset="0.5" />
+                <item android:color="#E67C3AED" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- 3. Center Golden Kintsugi Core Spark -->
+    <path android:pathData="M 50,22 C 50,38 38,50 22,50 C 38,50 50,62 50,78 C 50,62 62,50 78,50 C 62,50 50,38 50,22 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="20"
+                android:startY="20"
+                android:endX="80"
+                android:endY="80"
+                android:type="linear">
+                <item android:color="#FFFFE082" android:offset="0.0" />
+                <item android:color="#FFF4C542" android:offset="0.4" />
+                <item android:color="#FFD97706" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- 4. Inner Bright White Core Point -->
+    <path
+        android:fillColor="#FAFAFA"
+        android:pathData="M50,45.5 A4.5,4.5 0 1,1 49.99,45.5 Z" />
+
+</vector>

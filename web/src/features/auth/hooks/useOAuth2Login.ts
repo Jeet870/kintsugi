@@ -1,0 +1,61 @@
+import { useMutation } from '@tanstack/react-query'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { authApi } from '@/features/auth/api/authApi'
+import { tokenStorage } from '@/lib/auth/tokenStorage'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { queryClient } from '@/lib/query/queryClient'
+import { queryKeys } from '@/lib/query/queryKeys'
+import { ROUTES } from '@/app/router/routes'
+import type { TokenPair, User } from '@/types/api'
+import type { APIError } from '@/lib/api/apiClient'
+
+export interface OAuth2Payload {
+  provider: string
+  email: string
+  name?: string
+  avatar_url?: string
+  provider_id?: string
+  token?: string
+}
+
+export function useOAuth2Login() {
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const fromLocation = (location.state as { from?: { pathname: string } })?.from?.pathname
+
+  return useMutation<TokenPair, APIError, OAuth2Payload>({
+    mutationFn: (payload: OAuth2Payload) => authApi.loginWithOAuth(payload),
+    retry: false,
+    onSuccess: async (tokenPair: TokenPair) => {
+      tokenStorage.setAccessToken(tokenPair.access_token)
+      if (tokenPair.refresh_token) {
+        tokenStorage.setRefreshToken(tokenPair.refresh_token)
+      }
+
+      try {
+        const user: User = await authApi.getCurrentUser()
+
+        useAuthStore.getState().setUser({
+          id: String(user.id),
+          email: user.email,
+          name: user.name || undefined,
+          avatarUrl: user.avatar_url || undefined,
+        })
+        useAuthStore.getState().setAuthenticated(true)
+        useAuthStore.getState().setInitialized(true)
+
+        queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser })
+
+        const targetPath = fromLocation || ROUTES.APP.DASHBOARD
+        navigate(targetPath, { replace: true })
+      } catch (profileError) {
+        tokenStorage.clearTokens()
+        useAuthStore.getState().clearAuth()
+        throw profileError
+      }
+    },
+  })
+}
+
+export default useOAuth2Login

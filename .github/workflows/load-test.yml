@@ -1,0 +1,80 @@
+name: Kintsugi Automated Baseline & Load Testing Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/load-test.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/**'
+  workflow_dispatch:
+    inputs:
+      concurrent_users:
+        description: 'Number of virtual concurrent users'
+        required: true
+        default: '100'
+      duration_seconds:
+        description: 'Test duration in seconds'
+        required: true
+        default: '60'
+      target_endpoint:
+        description: 'Target API path to load test'
+        required: true
+        default: '/health/live'
+
+jobs:
+  baseline-load-test:
+    name: ⚡ Baseline Load Test
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: kintsugi_db
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install locust httpx
+
+      - name: Start FastAPI Server
+        env:
+          DATABASE_URL: mysql+pymysql://root:root@localhost:3306/kintsugi_db
+          SECRET_KEY: test_secret_key_for_ci_pipeline_build
+        run: |
+          cd backend
+          python start.py --no-celery &
+          sleep 5
+
+      - name: Run Baseline Load Test Engine
+        run: |
+          USERS="${{ github.event.inputs.concurrent_users || '100' }}"
+          DURATION="${{ github.event.inputs.duration_seconds || '60' }}"
+          ENDPOINT="${{ github.event.inputs.target_endpoint || '/health/live' }}"
+          
+          cd backend
+          python tests/load/load_test_runner.py --url "http://127.0.0.1:8000${ENDPOINT}" --users "$USERS" --duration "$DURATION"
+
+      - name: Run Headless Locust Verification
+        run: |
+          cd backend
+          locust -f tests/load/locustfile.py --host http://127.0.0.1:8000 --headless -u 100 -r 10 --run-time 1m

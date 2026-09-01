@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_splash">
+
+    <!-- Splash Screen Destination -->
+    <fragment
+        android:id="@+id/nav_splash"
+        android:name="com.kintsugi.app.features.splash.SplashFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_splash">
+        <action
+            android:id="@+id/action_splash_to_auth"
+            app:destination="@id/nav_auth_pager"
+            app:popUpTo="@id/nav_splash"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splash_to_dashboard"
+            app:destination="@id/nav_dashboard"
+            app:popUpTo="@id/nav_splash"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- Auth Pager Destination -->
+    <fragment
+        android:id="@+id/nav_auth_pager"
+        android:name="com.kintsugi.app.features.auth.ui.AuthPagerFragment"
+        android:label="@string/title_login"
+        tools:layout="@layout/fragment_auth_pager">
+        <action
+            android:id="@+id/action_auth_to_dashboard"
+            app:destination="@id/nav_dashboard"
+            app:popUpTo="@id/nav_auth_pager"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- Main Dashboard Destination -->
+    <fragment
+        android:id="@+id/nav_dashboard"
+        android:name="com.kintsugi.app.features.dashboard.ui.DashboardFragment"
+        android:label="@string/home"
+        tools:layout="@layout/fragment_dashboard" />
+
+    <!-- AI Companion Home (Chat Sessions List) -->
+    <fragment
+        android:id="@+id/nav_companion"
+        android:name="com.kintsugi.app.features.aicompanion.ui.ChatSessionsFragment"
+        android:label="@string/ai_companion"
+        tools:layout="@layout/fragment_chat_sessions">
+        <action
+            android:id="@+id/action_chat_sessions_to_chat_window"
+            app:destination="@id/nav_chat_window" />
+    </fragment>
+
+    <!-- AI Companion Dedicated Chat Window -->
+    <fragment
+        android:id="@+id/nav_chat_window"
+        android:name="com.kintsugi.app.features.aicompanion.AICompanionFragment"
+        android:label="Conversation"
+        tools:layout="@layout/fragment_companion" />
+
+    <!-- Mood Tracker Destination -->
+    <fragment
+        android:id="@+id/nav_mood"
+        android:name="com.kintsugi.app.features.moodtracker.MoodTrackerFragment"
+        android:label="@string/mood_tracker"
+        tools:layout="@layout/fragment_mood_tracker" />
+
+    <!-- Journal List Destination -->
+    <fragment
+        android:id="@+id/nav_journal"
+        android:name="com.kintsugi.app.features.journal.ui.JournalListFragment"
+        android:label="@string/journal"
+        tools:layout="@layout/fragment_journal">
+        <action
+            android:id="@+id/action_journal_to_editor"
+            app:destination="@id/nav_journal_editor" />
+    </fragment>
+
+    <!-- Journal Editor Destination -->
+    <fragment
+        android:id="@+id/nav_journal_editor"
+        android:name="com.kintsugi.app.features.journal.ui.JournalEditorFragment"
+        android:label="@string/new_entry">
+        <argument
+            android:name="journalId"
+            android:defaultValue="-1L"
+            app:argType="long" />
+        <argument
+            android:name="mode"
+            android:defaultValue="create"
+            app:argType="string" />
+        <argument
+            android:name="isReadOnly"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
+
+    <!-- Breathing Destination -->
+    <fragment
+        android:id="@+id/nav_breathing"
+        android:name="com.kintsugi.app.features.breathing.ui.BreathingFragment"
+        android:label="@string/breathing"
+        tools:layout="@layout/fragment_breathing" />
+
+    <!-- Daily Motivation Destination -->
+    <fragment
+        android:id="@+id/nav_motivation"
+        android:name="com.kintsugi.app.features.motivation.ui.DailyMotivationFragment"
+        android:label="@string/motivation"
+        tools:layout="@layout/fragment_daily_motivation" />
+
+    <!-- Emergency Help Destination -->
+    <fragment
+        android:id="@+id/nav_emergency"
+        android:name="com.kintsugi.app.features.emergency.ui.EmergencyHelpFragment"
+        android:label="@string/emergency"
+        tools:layout="@layout/fragment_emergency_help" />
+
+    <!-- Profile Destination -->
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.kintsugi.app.features.profile.ui.ProfileFragment"
+        android:label="@string/profile"
+        tools:layout="@layout/fragment_profile" />
+
+    <!-- Settings Destination -->
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.kintsugi.app.features.settings.ui.SettingsFragment"
+        android:label="@string/settings"
+        tools:layout="@layout/fragment_settings" />
+
+    <!-- About Destination -->
+    <fragment
+        android:id="@+id/nav_about"
+        android:name="com.kintsugi.app.features.about.ui.AboutFragment"
+        android:label="@string/about"
+        tools:layout="@layout/fragment_about" />
+
+    <!-- Minigame Destination -->
+    <fragment
+        android:id="@+id/nav_minigame"
+        android:name="com.kintsugi.app.features.minigame.ui.MindGameFragment"
+        android:label="@string/minigame"
+        tools:layout="@layout/fragment_mind_game" />
+
+    <!-- Notification Destination -->
+    <fragment
+        android:id="@+id/nav_notification"
+        android:name="com.kintsugi.app.features.notification.ui.NotificationFragment"
+        android:label="Notifications"
+        tools:layout="@layout/fragment_notification" />
+
+    <!-- Privacy Policy Destination -->
+    <fragment
+        android:id="@+id/nav_privacy"
+        android:name="com.kintsugi.app.features.settings.ui.PrivacyPolicyFragment"
+        android:label="Privacy Policy"
+        tools:layout="@layout/fragment_privacy_policy" />
+
+    <!-- Terms & Conditions Destination -->
+    <fragment
+        android:id="@+id/nav_terms"
+        android:name="com.kintsugi.app.features.settings.ui.TermsFragment"
+        android:label="Terms &amp; Conditions"
+        tools:layout="@layout/fragment_terms" />
+
+    <!-- Support & Feedback Destination -->
+    <fragment
+        android:id="@+id/nav_support"
+        android:name="com.kintsugi.app.features.settings.ui.SupportFragment"
+        android:label="Support &amp; Feedback"
+        tools:layout="@layout/fragment_support" />
+
+    <!-- Forgot Password Flow Destinations -->
+    <fragment
+        android:id="@+id/nav_forgot_password"
+        android:name="com.kintsugi.app.features.auth.ui.ForgotPasswordFragment"
+        android:label="Forgot Password"
+        tools:layout="@layout/fragment_forgot_password">
+        <action
+            android:id="@+id/action_forgot_to_otp"
+            app:destination="@id/nav_otp_verification" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_otp_verification"
+        android:name="com.kintsugi.app.features.auth.ui.OtpVerificationFragment"
+        android:label="Verify Code"
+        tools:layout="@layout/fragment_otp_verification">
+        <action
+            android:id="@+id/action_otp_to_reset"
+            app:destination="@id/nav_reset_password" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_reset_password"
+        android:name="com.kintsugi.app.features.auth.ui.ResetPasswordFragment"
+        android:label="Create New Password"
+        tools:layout="@layout/fragment_reset_password">
+        <action
+            android:id="@+id/action_reset_to_success"
+            app:destination="@id/nav_password_reset_success" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_password_reset_success"
+        android:name="com.kintsugi.app.features.auth.ui.PasswordResetSuccessFragment"
+        android:label="Password Reset Successful"
+        tools:layout="@layout/fragment_password_reset_success" />
+
+</navigation>

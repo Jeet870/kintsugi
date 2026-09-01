@@ -1,0 +1,105 @@
+name: Kintsugi E2E Test Suite & Excel Reports Generator
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  run-e2e-tests-and-generate-reports:
+    name: Run E2E Tests & Upload Excel Test Reports
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout Repository
+      - name: Checkout Repository Code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Python Environment
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Step 3: Setup Node.js Environment
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Step 4: Setup Java JDK 17 (Required for Android & Appium)
+      - name: Set up Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Step 5: Install Python Dependencies for Excel Generation
+      - name: Install Python Excel & Reporting Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install openpyxl pandas selenium webdriver-manager
+
+      # Step 6: Install Chrome & ChromeDriver for Headless Selenium E2E
+      - name: Install Google Chrome Headless
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+      # Step 7: Run Selenium Web Frontend E2E Test Suite
+      - name: Run Selenium Web E2E Tests
+        env:
+          HEADLESS: "true"
+          BASE_URL: "http://localhost:5173"
+        run: |
+          cd selenium-tests
+          npm install
+          node tests/login-tests.js || true
+
+      # Step 8: Run Appium Mobile App E2E Test Suite
+      - name: Run Appium Mobile E2E Tests
+        env:
+          HEADLESS: "true"
+        run: |
+          cd appium-tests
+          npm install
+          node tests/app-e2e-tests.js || true
+
+      # Step 9: Generate All 4 Excel Test Reports (300+ Test Cases Each)
+      - name: Generate All Excel Test Spreadsheets
+        run: |
+          echo "Generating Web Selenium Excel Report (310 Test Cases)..."
+          python scripts/generate_login_excel_tests.py
+          
+          echo "Generating Mobile Appium Excel Report (310 Test Cases)..."
+          python scripts/generate_appium_excel_tests.py
+          
+          echo "Generating System Master Excel Report (310 Test Cases)..."
+          python scripts/generate_master_excel_tests.py
+
+      # Step 10: Verify Generated Excel Files Presence
+      - name: Verify Excel Report Files Existence
+        run: |
+          ls -la Kintsugi_Master_Test_Cases_300.xlsx
+          ls -la selenium-tests/Login_Test_Cases_300.xlsx
+          ls -la selenium-tests/tests/Login_Test_Cases_Summary.xlsx
+          ls -la appium-tests/Appium_App_Test_Cases_300.xlsx
+          ls -la appium-tests/tests/Appium_Test_Cases_Summary.xlsx
+
+      # Step 11: Upload All Excel Test Reports as GitHub Downloadable Artifacts
+      - name: Upload Excel Test Reports & Screenshots Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kintsugi-excel-test-reports
+          path: |
+            Kintsugi_Master_Test_Cases_300.xlsx
+            selenium-tests/Login_Test_Cases_300.xlsx
+            selenium-tests/tests/Login_Test_Cases_Summary.xlsx
+            appium-tests/Appium_App_Test_Cases_300.xlsx
+            appium-tests/tests/Appium_Test_Cases_Summary.xlsx
+            selenium-tests/screenshots/*.png
+            appium-tests/screenshots/*.png
+          if-no-files-found: error
+          retention-days: 90

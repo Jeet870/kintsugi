@@ -1,0 +1,28 @@
+{
+  "name": "kintsugi-appium-tests",
+  "version": "1.0.0",
+  "description": "Appium E2E Mobile Test Suite for Kintsugi Android & iOS Frontend",
+  "main": "tests/app-e2e-tests.js",
+  "scripts": {
+    "test": "node tests/app-e2e-tests.js",
+    "generate-excel": "python ../scripts/generate_appium_excel_tests.py"
+  },
+  "keywords": [
+    "appium",
+    "webdriverio",
+    "android",
+    "uiautomator2",
+    "e2e",
+    "mobile-testing",
+    "kintsugi"
+  ],
+  "author": "Kintsugi Mobile QA Team",
+  "license": "ISC",
+  "dependencies": {
+    "webdriverio": "^8.32.0"
+  },
+  "devDependencies": {
+    "appium": "^2.5.1",
+    "appium-uiautomator2-driver": "^3.0.0"
+  }
+}

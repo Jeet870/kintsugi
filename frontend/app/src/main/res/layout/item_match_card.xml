@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_match"
+    android:layout_width="match_parent"
+    android:layout_height="105dp"
+    android:layout_margin="5dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardBackgroundColor="#1A1232"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="4dp"
+    app:strokeColor="#2E224D"
+    app:strokeWidth="1.5dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp">
+
+        <!-- Card Back View (Dark Frosted Glass with Glowing Purple Diamond/Sparkle) -->
+        <FrameLayout
+            android:id="@+id/layout_card_back"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_round_icon_btn"
+            android:backgroundTint="#21173D">
+
+            <ImageView
+                android:id="@+id/iv_card_back_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/ic_sparkles"
+                app:tint="#A855F7" />
+
+        </FrameLayout>
+
+        <!-- Card Front View (Vector Symbol) -->
+        <FrameLayout
+            android:id="@+id/layout_card_front"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_round_icon_btn"
+            android:backgroundTint="#2A1D4E"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/iv_card_front_icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/app_name"
+                tools:src="@drawable/ic_card_lotus" />
+
+        </FrameLayout>
+
+    </FrameLayout>
+
+</com.google.android.material.card.MaterialCardView>

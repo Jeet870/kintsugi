@@ -1,0 +1,72 @@
+{
+  "user_rules": {
+    "critical": {
+      "keywords": [
+        "suicide",
+        "kill myself",
+        "end my life",
+        "want to die",
+        "overdose",
+        "hang myself",
+        "cut my wrists"
+      ],
+      "patterns": [
+        "\\b(how|way) to (kill|end)\\s+(myself|my life)\\b",
+        "\\b(going|plan) to (commit suicide|die|kill myself)\\b"
+      ]
+    },
+    "high": {
+      "keywords": [
+        "self-harm",
+        "cutting myself",
+        "burning myself",
+        "hurting myself",
+        "cannot go on"
+      ],
+      "patterns": [
+        "\\b(feel like|want to) (hurting|harming) myself\\b"
+      ]
+    },
+    "medium": {
+      "keywords": [
+        "hopeless",
+        "worthless",
+        "deep depression",
+        "overwhelmed",
+        "nobody cares"
+      ],
+      "patterns": [
+        "\\b(feel|feeling) (extremely|so) (alone|depressed|sad)\\b"
+      ]
+    },
+    "low": {
+      "keywords": [
+        "stressed",
+        "tired",
+        "anxious",
+        "bad day"
+      ],
+      "patterns": []
+    }
+  },
+  "ai_rules": {
+    "prohibited_clinical_phrases": [
+      "i diagnose you",
+      "you have clinical",
+      "my medical diagnosis",
+      "i prescribe",
+      "take this dosage"
+    ],
+    "prohibited_harmful_phrases": [
+      "you should end your life",
+      "how to hurt yourself",
+      "methods for suicide"
+    ],
+    "prohibited_prompt_leakage": [
+      "COMPANION_CHAT_SYSTEM_PROMPT",
+      "MOOD_SUPPORT_SYSTEM_PROMPT",
+      "You are an empathetic, compassionate mental wellness assistant"
+    ],
+    "max_response_length": 4000
+  }
+}

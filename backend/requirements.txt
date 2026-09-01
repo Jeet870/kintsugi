@@ -1,0 +1,53 @@
+# =============================================================================
+# Kintsugi Backend Dependency Manifest
+# =============================================================================
+
+# --- Web Framework & Server ---
+fastapi==0.139.2
+uvicorn[standard]==0.51.0
+starlette==1.3.1
+websockets==16.1.1
+watchfiles==1.2.0
+
+# --- Database & ORM ---
+sqlalchemy==2.0.51
+alembic==1.18.5
+pymysql==1.2.0
+psycopg2-binary==2.9.12
+greenlet==3.5.4
+Mako==1.3.12
+
+# --- Validation & Configuration ---
+pydantic==2.13.4
+pydantic-settings==2.14.2
+email-validator==2.3.0
+
+# --- Cryptography, Authentication & Security ---
+cryptography==49.0.0
+python-jose[cryptography]==3.5.0
+passlib[bcrypt]==1.7.4
+bcrypt==5.0.0
+python-multipart==0.0.32
+itsdangerous==2.2.0
+
+# --- Background Jobs & Async Queue ---
+celery==5.6.3
+redis==4.5.5
+
+# --- AI Integration ---
+mistralai==2.7.1
+
+# --- HTTP Client & Environment ---
+httpx==0.28.1
+python-dotenv==1.2.2
+
+# --- Data Processing & Excel Reports ---
+openpyxl==3.1.5
+tzdata==2026.3
+
+# --- Telemetry & Observability ---
+opentelemetry-api==1.39.1
+
+# --- Testing & Quality Assurance ---
+pytest==9.1.1
+pytest-asyncio==1.4.0

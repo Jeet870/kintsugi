@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spacing Scale (8dp Grid) -->
+    <dimen name="spacing_none">0dp</dimen>
+    <dimen name="spacing_xxs">4dp</dimen>
+    <dimen name="spacing_xs">8dp</dimen>
+    <dimen name="spacing_sm">12dp</dimen>
+    <dimen name="spacing_md">16dp</dimen>
+    <dimen name="spacing_lg">24dp</dimen>
+    <dimen name="spacing_xl">32dp</dimen>
+
+    <!-- Strict Compact Spacing Scale -->
+    <dimen name="outer_margin">24dp</dimen>
+    <dimen name="section_gap">24dp</dimen>
+    <dimen name="card_gap">16dp</dimen>
+    <dimen name="content_padding">16dp</dimen>
+    <dimen name="text_gap">8dp</dimen>
+
+    <!-- Screen Layout & Sections -->
+    <dimen name="screen_horizontal_padding">24dp</dimen>
+    <dimen name="screen_vertical_padding">16dp</dimen>
+    <dimen name="screen_content_spacing">24dp</dimen>
+    <dimen name="section_spacing">24dp</dimen>
+    <dimen name="toolbar_height">56dp</dimen>
+    <dimen name="bottom_navigation_height">72dp</dimen>
+    <dimen name="quick_action_card_height">110dp</dimen>
+
+    <!-- Radii System -->
+    <dimen name="card_radius_sm">14dp</dimen>
+    <dimen name="card_radius_md">18dp</dimen>
+    <dimen name="card_radius_lg">18dp</dimen>
+    <dimen name="card_radius_xl">24dp</dimen>
+    <dimen name="glass_card_radius">18dp</dimen>
+    <dimen name="dialog_radius">20dp</dimen>
+    <dimen name="bottom_sheet_radius">28dp</dimen>
+    <dimen name="bottom_nav_corner_radius">24dp</dimen>
+    <dimen name="fab_corner_radius">18dp</dimen>
+    <dimen name="chart_corner_radius">18dp</dimen>
+
+    <!-- Buttons & Text Fields -->
+    <dimen name="button_height">48dp</dimen>
+    <dimen name="button_corner_radius">16dp</dimen>
+    <dimen name="button_icon_size">20dp</dimen>
+    <dimen name="button_padding_horizontal">20dp</dimen>
+    <dimen name="button_padding_vertical">12dp</dimen>
+
+    <dimen name="textfield_height">52dp</dimen>
+    <dimen name="textfield_corner_radius">16dp</dimen>
+    <dimen name="textfield_padding">16dp</dimen>
+
+    <!-- Icon Scale -->
+    <dimen name="icon_xs">14dp</dimen>
+    <dimen name="icon_sm">18dp</dimen>
+    <dimen name="icon_md">24dp</dimen>
+    <dimen name="icon_lg">32dp</dimen>
+    <dimen name="icon_xl">48dp</dimen>
+    <dimen name="toolbar_icon_size">24dp</dimen>
+    <dimen name="bottom_nav_icon_size">24dp</dimen>
+    <dimen name="avatar_header_size">56dp</dimen>
+</resources>

@@ -1,0 +1,5 @@
+# Local Android SDK configuration template
+# Copy this file to local.properties and set your local SDK directory path.
+# DO NOT COMMIT local.properties to source control!
+
+sdk.dir=C\:\\Users\\hp\\AppData\\Local\\Android\\Sdk

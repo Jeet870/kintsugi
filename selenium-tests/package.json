@@ -1,0 +1,29 @@
+{
+  "name": "kintsugi-selenium-tests",
+  "version": "1.0.0",
+  "description": "Selenium E2E Test Suite for Kintsugi Web Frontend",
+  "main": "tests/login-tests.js",
+  "scripts": {
+    "test": "node tests/login-tests.js",
+    "test:mocha": "mocha tests/login-tests.js --timeout 60000",
+    "generate-excel": "python ../scripts/generate_login_excel_tests.py"
+  },
+  "keywords": [
+    "selenium",
+    "webdriver",
+    "e2e",
+    "testing",
+    "kintsugi",
+    "login"
+  ],
+  "author": "Kintsugi QA Team",
+  "license": "ISC",
+  "dependencies": {
+    "selenium-webdriver": "^4.18.0"
+  },
+  "devDependencies": {
+    "chromedriver": "^122.0.0",
+    "geckodriver": "^4.3.0",
+    "mocha": "^10.3.0"
+  }
+}

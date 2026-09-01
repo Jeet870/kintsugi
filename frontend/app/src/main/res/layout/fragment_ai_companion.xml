@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_app_gradient"
+    android:orientation="vertical">
+
+    <!-- Edge-to-Edge Kintsugi Toolbar -->
+    <com.kintsugi.app.core.ui.widget.KintsugiToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Compact Disclaimer Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_disclaimer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:cardBackgroundColor="@color/card_surface"
+        app:cardCornerRadius="16dp"
+        app:strokeColor="@color/glass_card_border"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-regular"
+                android:text="✦ This AI companion offers empathetic support but isn't a replacement for professional clinical care."
+                android:textColor="@color/soft_lavender"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Main Chat Conversation Frame (Fills all available height) -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- RecyclerView Chat Messages List -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_chat_messages"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp"
+            tools:listitem="@layout/item_chat_message_ai" />
+
+        <!-- Suggested Prompts Onboarding View -->
+        <com.kintsugi.app.features.aicompanion.ui.components.SuggestedPromptsView
+            android:id="@+id/suggested_prompts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="24dp"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <!-- Typing Indicator View Bar -->
+    <LinearLayout
+        android:id="@+id/layout_typing_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="4dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-italic"
+            android:text="Companion is reflecting"
+            android:textColor="@color/soft_lavender"
+            android:textSize="12sp" />
+
+        <com.kintsugi.app.features.aicompanion.ui.components.TypingIndicatorView
+            android:id="@+id/typing_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_marginStart="8dp" />
+
+    </LinearLayout>
+
+    <!-- Pinned Floating Message Input Bar Composer (Moved higher above bottom nav bar) -->
+    <LinearLayout
+        android:id="@+id/layout_input_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="108dp"
+        android:background="@drawable/bottom_navigation_background"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <com.kintsugi.app.core.ui.widget.PremiumTextField
+            android:id="@+id/et_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Type your reflection..." />
+
+        <com.kintsugi.app.core.ui.widget.PrimaryGradientButton
+            android:id="@+id/btn_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Send ✦" />
+
+    </LinearLayout>
+
+</LinearLayout>

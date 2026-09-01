@@ -1,0 +1,17 @@
+{
+  "project_info": {
+    "project_number": "123456789",
+    "project_id": "kintsugi-app",
+    "storage_bucket": "kintsugi-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:123456789:android:abcdef",
+        "android_client_info": {
+          "package_name": "com.kintsugi.app"
+        }
+      }
+    }
+  ]
+}

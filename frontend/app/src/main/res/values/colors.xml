@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Kintsugi Deep Purple System Palette -->
+    <color name="kintsugi_gold">#8B5CF6</color>
+    <color name="kintsugi_gold_light">#B794F6</color>
+    <color name="kintsugi_gold_dark">#7C3AED</color>
+    <color name="luxury_gold">#8B5CF6</color>
+    <color name="light_violet">#C4B5FD</color>
+
+    <color name="gold_accent_alpha30">#338B5CF6</color>
+    <color name="gold_accent_alpha15">#268B5CF6</color>
+    <color name="gold_accent_alpha08">#148B5CF6</color>
+
+    <!-- Surfaces & Backgrounds -->
+    <color name="background_warm">#120E22</color>
+    <color name="surface_warm">#1A1630</color>
+    <color name="surface_dark">#120E22</color>
+    <color name="secondary_surface">#2D2250</color>
+    <color name="card_surface">#241B3D</color>
+    <color name="navigation_surface">#171224</color>
+    <color name="navigation_border">#3B2A5E</color>
+
+    <color name="royal_purple">#8B5CF6</color>
+    <color name="royal_purple_light">#B794F6</color>
+    <color name="deep_violet">#120E22</color>
+    <color name="glass_card_bg">#241B3D</color>
+    <color name="glass_card_border">#3B2A5E</color>
+    <color name="soft_lavender">#B794F6</color>
+
+    <!-- Typography Colors -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B7B3C9</color>
+    <color name="text_muted">#8B88A0</color>
+    <color name="icon_secondary">#B7B3C9</color>
+    <color name="divider_color">#3B2A5E</color>
+
+    <!-- Status Colors -->
+    <color name="emerald_green">#4ADE80</color>
+    <color name="emerald_green_bg">#132E20</color>
+    <color name="teal_secondary">#38BDF8</color>
+    <color name="amber_warning">#FACC15</color>
+    <color name="error_red">#FB7185</color>
+    <color name="warm_red">#FB7185</color>
+    <color name="warm_red_bg">#34181F</color>
+    <color name="black_overlay">#80000000</color>
+    <color name="transparent">#00000000</color>
+</resources>
