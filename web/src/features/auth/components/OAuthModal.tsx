@@ -20,6 +20,8 @@ function isValidClientId(id?: string): boolean {
   return true
 }
 
+const DEFAULT_GOOGLE_CLIENT_ID = '628430533257-mhs7rn8r72ntrsnihbccp7lgbras2bpr.apps.googleusercontent.com'
+
 export const OAuthModal: React.FC<OAuthModalProps> = ({
   isOpen,
   provider,
@@ -40,16 +42,12 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
       authApi.getOAuthConfig()
         .then((config) => {
           setOauthConfig(config)
-          const gId = config.google_client_id || import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+          const gId = config.google_client_id || import.meta.env.VITE_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID
           const ghId = config.github_client_id || import.meta.env.VITE_GITHUB_CLIENT_ID || ''
           
           if (provider === 'google') {
             setClientId(gId)
-            if (!isValidClientId(gId)) {
-              setAuthMode('token')
-            } else {
-              setAuthMode('popup')
-            }
+            setAuthMode('popup')
           } else if (provider === 'github') {
             setClientId(ghId)
             if (!isValidClientId(ghId)) {
@@ -60,7 +58,12 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
           }
         })
         .catch(() => {
-          setAuthMode('token')
+          if (provider === 'google') {
+            setClientId(DEFAULT_GOOGLE_CLIENT_ID)
+            setAuthMode('popup')
+          } else {
+            setAuthMode('token')
+          }
         })
     }
   }, [isOpen, provider])
@@ -92,7 +95,7 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
   useEffect(() => {
     if (!isOpen || provider !== 'google' || !gisLoaded || !googleBtnRef.current) return
 
-    const activeClientId = clientId || oauthConfig.google_client_id || import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+    const activeClientId = clientId || oauthConfig.google_client_id || import.meta.env.VITE_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID
     if (!isValidClientId(activeClientId)) return
 
     try {
@@ -127,7 +130,7 @@ export const OAuthModal: React.FC<OAuthModalProps> = ({
   const title = isGoogle ? 'Authenticate with Google OAuth2' : 'Authenticate with GitHub OAuth2'
 
   const activeClientId = isGoogle
-    ? (clientId || oauthConfig.google_client_id || import.meta.env.VITE_GOOGLE_CLIENT_ID || '')
+    ? (clientId || oauthConfig.google_client_id || import.meta.env.VITE_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID)
     : (clientId || oauthConfig.github_client_id || import.meta.env.VITE_GITHUB_CLIENT_ID || '')
 
   const hasValidClientId = isValidClientId(activeClientId)
