@@ -56,7 +56,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ embedded = false, onSwitch
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -65,8 +64,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ embedded = false, onSwitch
       password: '',
     },
   })
-
-  const typedEmail = watch('email', '')
 
   const handleOpenOAuthModal = (provider: 'google' | 'github') => {
     setOauthProvider(provider)
