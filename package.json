@@ -1,0 +1,10 @@
+{
+  "name": "kintsugi-sanctuary",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "npm --prefix web install",
+    "build": "npm --prefix web run build",
+    "start": "npm --prefix web run preview"
+  }
+}
