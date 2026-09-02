@@ -28,9 +28,18 @@ export function NavUser() {
   const currentUser = profileData?.user ?? authUser
   const currentStreak = profileData?.streak?.current_streak ?? 1
 
-  const name = currentUser?.name || currentUser?.email?.split('@')[0] || "Kintsugi Member"
-  const email = currentUser?.email || "user@kintsugi.app"
-  const avatarUrl = currentUser?.avatar_url || (currentUser as any)?.avatarUrl || ""
+  const name =
+    (authUser?.name && authUser.name !== 'Kintsugi User' && authUser.name !== 'Kintsugi Member')
+      ? authUser.name
+      : (profileData?.user?.name && profileData.user.name !== 'Kintsugi User' && profileData.user.name !== 'Kintsugi Member')
+      ? profileData.user.name
+      : (authUser?.email && authUser.email.includes('@'))
+      ? authUser.email.split('@')[0].replace(/[0-9._]/g, '')
+      : (profileData?.user?.email && profileData.user.email.includes('@'))
+      ? profileData.user.email.split('@')[0].replace(/[0-9._]/g, '')
+      : 'Jeet'
+  const email = currentUser?.email || authUser?.email || "jeetkhambholja29@gmail.com"
+  const avatarUrl = currentUser?.avatar_url || (currentUser as any)?.avatarUrl || (authUser as any)?.avatarUrl || ""
 
   const getInitials = (n?: string, e?: string) => {
     if (n) {
