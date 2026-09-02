@@ -3,8 +3,8 @@ import { z } from 'zod'
 /**
  * Zod validation schema for frontend environment variables.
  */
-const defaultApiUrl = 'http://localhost:8000/api/v1'
-const defaultWsUrl = 'ws://localhost:8000/ws'
+const defaultApiUrl = 'https://kintsugi-50045507037.development.catalystappsail.in/api/v1'
+const defaultWsUrl = 'wss://kintsugi-50045507037.development.catalystappsail.in/ws'
 
 const envSchema = z.object({
   VITE_API_BASE_URL: z.string().optional(),
