@@ -64,6 +64,8 @@ backend/build/
 backend/*.egg-info/
 
 # Web / Node Ignores
+dist/
+node_modules/
 web/node_modules/
 web/dist/
 web/build/
