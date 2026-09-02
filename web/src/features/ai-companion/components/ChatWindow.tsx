@@ -58,7 +58,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ sessionId, className = '
 
   /* 1. Active Chat Session */
   const { data: session, isLoading } = useChatSession({ sessionId })
-  const activeSessionId = session ? String(session.id) : undefined
+  const activeSessionId = session ? String(session.id) : 'session_active'
 
   /* 2. User Session History List for Right Sheet */
   const { data: userSessions, isLoading: isLoadingSessions, refetch: refetchSessions } = useUserSessions()

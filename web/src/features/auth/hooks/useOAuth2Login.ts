@@ -44,8 +44,8 @@ async function handleOAuthSuccess(tokenPair: TokenPair, navigate: ReturnType<typ
     console.warn('Failed to fetch user profile after OAuth login, using fallback authenticated session:', profileError)
     useAuthStore.getState().setUser({
       id: '1',
-      email: 'user@kintsugi.app',
-      name: 'Kintsugi User',
+      email: 'jeetkhambholja29@gmail.com',
+      name: 'Jeet',
     })
     useAuthStore.getState().setAuthenticated(true)
     useAuthStore.getState().setInitialized(true)
@@ -85,8 +85,8 @@ export function useOAuth2Login() {
       } catch (err) {
         console.warn('Backend OAuth verification unavailable, parsing verified provider token on client:', err)
         const decoded = decodeGoogleJwt(payload.token)
-        const email = decoded?.email || payload.email || 'user@kintsugi.app'
-        const name = decoded?.name || payload.name || 'Kintsugi User'
+        const email = decoded?.email || payload.email || 'jeetkhambholja29@gmail.com'
+        const name = decoded?.name || decoded?.given_name || payload.name || 'Jeet'
         const avatarUrl = decoded?.picture || payload.avatar_url || undefined
 
         useAuthStore.getState().setUser({

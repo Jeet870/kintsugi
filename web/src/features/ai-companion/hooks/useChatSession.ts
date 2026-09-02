@@ -67,6 +67,15 @@ export function useChatSession(options?: UseChatSessionOptions) {
       return newSession
     },
     enabled: options?.enabled ?? true,
+    placeholderData: {
+      id: 'session_active',
+      user_id: 1,
+      title: 'Kintsugi AI Companion',
+      status: 'active',
+      messages: [],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    } as any,
     staleTime: 1000 * 60 * 5, // 5 minutes stale time
     gcTime: 1000 * 60 * 15, // 15 minutes garbage collection time
     retry: 2,
