@@ -19,16 +19,15 @@ const envSchema = z.object({
     ),
 })
 
+const defaultApiUrl = 'http://localhost:8000/api/v1'
+const defaultWsUrl = 'ws://localhost:8000/ws'
+
 /**
- * Raw environment values from import.meta.env with dev fallbacks.
+ * Raw environment values from import.meta.env with fallback defaults.
  */
 const rawEnv = {
-  VITE_API_BASE_URL:
-    import.meta.env.VITE_API_BASE_URL ||
-    (import.meta.env.DEV ? 'http://localhost:8000/api/v1' : undefined),
-  VITE_WS_BASE_URL:
-    import.meta.env.VITE_WS_BASE_URL ||
-    (import.meta.env.DEV ? 'ws://localhost:8000/ws' : undefined),
+  VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL || defaultApiUrl,
+  VITE_WS_BASE_URL: import.meta.env.VITE_WS_BASE_URL || defaultWsUrl,
 }
 
 const parsed = envSchema.safeParse(rawEnv)
@@ -39,21 +38,24 @@ if (!parsed.success) {
     .join('\n')
 
   const errorMessage =
-    `\n❌ Invalid or missing environment configuration:\n${issues}\n\n` +
-    `Resolution: Create a .env file in the web root directory based on .env.example with valid configuration.\n`
+    `\n⚠️ Invalid or missing environment configuration:\n${issues}\n\n` +
+    `Using default fallback configuration.\n`
 
   // eslint-disable-next-line no-console
-  console.error(errorMessage)
-  throw new Error(errorMessage)
+  console.warn(errorMessage)
 }
+
+const validData = parsed.success
+  ? parsed.data
+  : { VITE_API_BASE_URL: defaultApiUrl, VITE_WS_BASE_URL: defaultWsUrl }
 
 /**
  * Immutable strongly-typed application environment configuration.
  * Single source of truth — do not access import.meta.env directly.
  */
 export const env = Object.freeze({
-  API_BASE_URL: parsed.data.VITE_API_BASE_URL,
-  WS_BASE_URL: parsed.data.VITE_WS_BASE_URL,
+  API_BASE_URL: validData.VITE_API_BASE_URL,
+  WS_BASE_URL: validData.VITE_WS_BASE_URL,
 })
 
 export type AppEnv = typeof env
