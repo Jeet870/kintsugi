@@ -10,23 +10,35 @@ export interface LoadingState {
   reset: () => void
 }
 
+let safetyTimer: ReturnType<typeof setTimeout> | null = null
+
 export const useLoadingStore = create<LoadingState>((set) => ({
   isLoading: false,
   message: 'Preparing your wellness experience...',
   progress: 0,
 
-  show: (message = 'Preparing your wellness experience...') =>
+  show: (message = 'Preparing your wellness experience...') => {
+    if (safetyTimer) clearTimeout(safetyTimer)
+
+    // Fallback safety timeout: ensure loading screen auto-dismisses after 1.2s max if route transition doesn't trigger
+    safetyTimer = setTimeout(() => {
+      set({ isLoading: false, progress: 100 })
+    }, 1200)
+
     set({
       isLoading: true,
       message,
       progress: 0,
-    }),
+    })
+  },
 
-  hide: () =>
+  hide: () => {
+    if (safetyTimer) clearTimeout(safetyTimer)
     set({
       isLoading: false,
       progress: 100,
-    }),
+    })
+  },
 
   setProgress: (progress: number) =>
     set({

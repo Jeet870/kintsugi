@@ -23,6 +23,7 @@ const MedicalDisclaimerPage = lazy(() => import('@/pages/landing/MedicalDisclaim
 
 /* ─── Lazy Loaded Auth & App Dashboard Components ─── */
 const AuthPage = lazy(() => import('@/features/auth/pages/AuthPage'))
+const GitHubOAuthCallbackPage = lazy(() => import('@/features/auth/pages/GitHubOAuthCallbackPage'))
 const MoodTrackerPage = lazy(() => import('@/features/mood-tracker/pages/MoodTrackerPage'))
 const JournalPage = lazy(() => import('@/features/journal/pages/JournalPage'))
 const BreathingExercisePage = lazy(() => import('@/features/breathing-exercise/pages/BreathingExercisePage'))
@@ -65,6 +66,8 @@ export function AppRouter() {
             <Route path={ROUTES.AUTH.REGISTER} element={<AuthPage initialMode="register" />} />
             <Route path={ROUTES.AUTH.FORGOT_PASSWORD} element={<AuthPage initialMode="login" />} />
             <Route path={ROUTES.AUTH.RESET_PASSWORD} element={<AuthPage initialMode="login" />} />
+            <Route path="/oauth/callback/github" element={<GitHubOAuthCallbackPage />} />
+            <Route path="/oauth/callback" element={<GitHubOAuthCallbackPage />} />
 
             {/* ── Protected Application Routes ── */}
             <Route element={<ProtectedRoute />}>

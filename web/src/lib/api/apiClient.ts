@@ -182,13 +182,13 @@ export function normalizeError(error: unknown): APIError {
     }
 
     const message =
-      data?.detail || data?.message || error.message || 'An unexpected error occurred.'
+      data?.error?.message || data?.detail || data?.message || error.message || 'An unexpected error occurred.'
 
     return {
       status,
-      code: data?.code || `HTTP_${status}`,
+      code: data?.error?.code || data?.code || `HTTP_${status}`,
       message: typeof message === 'string' ? message : JSON.stringify(message),
-      details: data?.details || data?.detail || undefined,
+      details: data?.error?.details || data?.details || data?.detail || undefined,
     }
   }
 

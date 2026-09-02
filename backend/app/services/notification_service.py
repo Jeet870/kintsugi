@@ -48,6 +48,9 @@ class NotificationService:
         """
         Safely enqueues Celery notification delivery task with try-except fallback.
         """
+        import os
+        if os.getenv("TESTING") == "1":
+            return
         try:
             from app.workers.tasks.notification_tasks import deliver_notification_task
             deliver_notification_task.delay(notification_id)

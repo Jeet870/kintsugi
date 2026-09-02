@@ -147,12 +147,21 @@ class RefreshTokenRequest(BaseModel):
 
 class OAuth2LoginRequest(BaseModel):
     """
-    Request payload for OAuth2 authentication flow (Google, GitHub, Apple, etc.).
+    Request payload for OAuth2 authentication flow (Google, GitHub, etc.).
+    Requires a valid OAuth2 token issued by Google or GitHub for server-side identity verification.
     """
     provider: str = Field(..., description="OAuth2 provider name e.g. 'google', 'github'")
-    token: Optional[str] = Field(None, description="OAuth2 ID token or Access token from provider")
-    email: EmailStr = Field(..., description="User email from OAuth provider")
-    name: Optional[str] = Field(None, description="User full name from OAuth provider")
-    avatar_url: Optional[str] = Field(None, description="User avatar URL from OAuth provider")
+    token: str = Field(..., min_length=1, description="OAuth2 ID token or Access token from provider")
+    email: Optional[EmailStr] = Field(None, description="Optional client email hint (verified server-side)")
+    name: Optional[str] = Field(None, description="Optional user full name")
+    avatar_url: Optional[str] = Field(None, description="Optional user avatar URL")
     provider_id: Optional[str] = Field(None, description="Provider subject ID")
+
+
+class GitHubCodeExchangeRequest(BaseModel):
+    """
+    Request payload for exchanging a GitHub OAuth authorization code for a session token pair.
+    """
+    code: str = Field(..., min_length=1, description="GitHub OAuth authorization code")
+
 

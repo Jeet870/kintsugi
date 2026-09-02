@@ -4,6 +4,8 @@ import { Mail, KeyRound, LockKeyhole, ArrowRight, CheckCircle2 } from 'lucide-re
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import apiClient from '@/lib/api/apiClient'
+import { ENDPOINTS } from '@/lib/api/endpoints'
 
 export interface ForgotPasswordFormProps {
   onBackToLogin: () => void
@@ -42,15 +44,10 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackTo
     setLoading(true)
 
     try {
-      const res = await fetch('/api/v1/auth/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      })
-      const data = await res.json()
+      const res = await apiClient.post(ENDPOINTS.AUTH.FORGOT_PASSWORD, { email })
       setLoading(false)
       toast.success('Verification code sent!', {
-        description: data.message || 'If an account exists, a code has been sent.',
+        description: res.data?.message || 'If an account exists, a code has been sent.',
       })
       setStep('otp')
       setResendCooldown(60)
@@ -75,25 +72,15 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackTo
     setLoading(true)
 
     try {
-      const res = await fetch('/api/v1/auth/verify-reset-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp }),
-      })
-      const data = await res.json()
+      const res = await apiClient.post(ENDPOINTS.AUTH.VERIFY_RESET_OTP, { email, otp })
       setLoading(false)
 
-      if (!res.ok) {
-        setError(data.detail || 'The verification code is incorrect or expired.')
-        return
-      }
-
-      setResetToken(data.reset_token)
+      setResetToken(res.data.reset_token)
       toast.success('Code verified successfully!')
       setStep('reset')
     } catch (err: any) {
       setLoading(false)
-      setError('Unable to verify code. Please try again.')
+      setError(err.message || 'Unable to verify code. Please try again.')
     }
   }
 
@@ -112,24 +99,17 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackTo
     setLoading(true)
 
     try {
-      const res = await fetch('/api/v1/auth/reset-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reset_token: resetToken, new_password: newPassword }),
+      await apiClient.post(ENDPOINTS.AUTH.RESET_PASSWORD, {
+        reset_token: resetToken,
+        new_password: newPassword,
       })
-      const data = await res.json()
       setLoading(false)
-
-      if (!res.ok) {
-        setError(data.detail || 'Unable to reset password.')
-        return
-      }
 
       toast.success('Password reset successfully!')
       setStep('success')
-    } catch {
+    } catch (err: any) {
       setLoading(false)
-      setError('Unable to reset password. Please check password security requirements.')
+      setError(err.message || 'Unable to reset password. Please check password security requirements.')
     }
   }
 

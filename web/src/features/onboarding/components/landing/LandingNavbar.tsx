@@ -49,7 +49,20 @@ export const LandingNavbar: React.FC = () => {
   ]
 
   const handleNavClick = (link: typeof navLinks[0]) => {
-    if (location.pathname === ROUTES.PUBLIC.HOME) {
+    if (location.pathname === link.path) {
+      if (link.hash) {
+        const el = document.querySelector(link.hash)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' })
+          window.history.pushState(null, '', link.hash)
+          return
+        }
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
+    if (location.pathname === ROUTES.PUBLIC.HOME && link.hash) {
       const el = document.querySelector(link.hash)
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' })

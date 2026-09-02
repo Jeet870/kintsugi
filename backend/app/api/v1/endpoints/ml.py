@@ -18,7 +18,7 @@ router = APIRouter()
 # --- Pydantic Request & Response Schemas ---
 
 class SentimentAnalysisRequest(BaseModel):
-    text: str = Field(..., example="I felt peaceful after my evening breathing session.")
+    text: str = Field(..., json_schema_extra={"example": "I felt peaceful after my evening breathing session."})
 
 class SentimentAnalysisResponse(BaseModel):
     valence: float
@@ -29,7 +29,7 @@ class SentimentAnalysisResponse(BaseModel):
     emotion_breakdown: Dict[str, float]
 
 class RiskEvaluationRequest(BaseModel):
-    text: str = Field(..., example="Feeling very overwhelmed today.")
+    text: str = Field(..., json_schema_extra={"example": "Feeling very overwhelmed today."})
 
 class RiskEvaluationResponse(BaseModel):
     risk_score: float
@@ -42,7 +42,7 @@ class MoodForecastRequest(BaseModel):
     mood_history: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
 
 class SemanticSearchRequest(BaseModel):
-    query: str = Field(..., example="Find entries where I felt hopeful and calm")
+    query: str = Field(..., json_schema_extra={"example": "Find entries where I felt hopeful and calm"})
     entries: List[Dict[str, Any]] = Field(default_factory=list)
 
 

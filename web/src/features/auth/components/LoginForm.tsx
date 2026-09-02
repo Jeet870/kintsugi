@@ -10,6 +10,7 @@ import { Mail, LockKeyhole, Eye, EyeOff, ArrowRight, AlertCircle } from 'lucide-
 import { AppLogo } from '@/components/AppLogo'
 import { useLogin } from '@/features/auth/hooks/useLogin'
 import { useOAuth2Login } from '@/features/auth/hooks/useOAuth2Login'
+import { OAuthModal } from '@/features/auth/components/OAuthModal'
 import { ROUTES } from '@/app/router/routes'
 import { useLoadingStore } from '@/stores/useLoadingStore'
 import { Button } from '@/components/ui/button'
@@ -43,46 +44,19 @@ export interface LoginFormProps {
 export const LoginForm: React.FC<LoginFormProps> = ({ embedded = false, onSwitchToRegister }) => {
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
+  const [oauthProvider, setOauthProvider] = useState<'google' | 'github' | null>(null)
+  const [isOAuthModalOpen, setIsOAuthModalOpen] = useState(false)
+
   const shouldReduceMotion = useReducedMotion()
   const isAnimated = !shouldReduceMotion
 
   const { mutate: login, isPending, error: serverError } = useLogin()
   const { mutate: oauthLogin, isPending: isOAuthPending } = useOAuth2Login()
 
-  const handleOAuthLogin = (provider: 'google' | 'github') => {
-    // Simulating OAuth2 token flow / provider identity verification
-    const oauthEmail = provider === 'google' ? 'user.google@kintsugi.app' : 'user.github@kintsugi.app'
-    const oauthName = provider === 'google' ? 'Google Kintsugi User' : 'GitHub Kintsugi User'
-
-    toast.info(`Initiating OAuth2 authentication via ${provider.toUpperCase()}...`, {
-      description: 'Verifying OAuth2 access token with server...',
-    })
-
-    oauthLogin(
-      {
-        provider,
-        email: oauthEmail,
-        name: oauthName,
-        provider_id: `${provider}_id_123456`,
-      },
-      {
-        onSuccess: () => {
-          toast.success(`Successfully authenticated via ${provider.toUpperCase()} OAuth2!`, {
-            description: 'Session initialized.',
-          })
-        },
-        onError: (err) => {
-          toast.error(`OAuth2 login with ${provider} failed`, {
-            description: err.message || 'Unable to complete OAuth authorization.',
-          })
-        },
-      }
-    )
-  }
-
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -91,6 +65,39 @@ export const LoginForm: React.FC<LoginFormProps> = ({ embedded = false, onSwitch
       password: '',
     },
   })
+
+  const typedEmail = watch('email', '')
+
+  const handleOpenOAuthModal = (provider: 'google' | 'github') => {
+    setOauthProvider(provider)
+    setIsOAuthModalOpen(true)
+  }
+
+  const handlePerformOAuthLoginToken = (provider: string, token: string) => {
+    toast.info(`Initiating OAuth2 identity verification via ${provider.toUpperCase()}...`, {
+      description: 'Validating token signature with official provider API...',
+    })
+
+    oauthLogin(
+      {
+        provider,
+        token,
+      },
+      {
+        onSuccess: () => {
+          setIsOAuthModalOpen(false)
+          toast.success(`Successfully authenticated via ${provider.toUpperCase()} OAuth2!`, {
+            description: 'User identity and email ownership verified.',
+          })
+        },
+        onError: (err) => {
+          toast.error(`OAuth2 verification failed`, {
+            description: err.message || 'Unable to verify OAuth token signature with provider.',
+          })
+        },
+      }
+    )
+  }
 
   const handleAuthNav = (path: string, message: string) => {
     useLoadingStore.getState().show(message)
@@ -223,7 +230,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ embedded = false, onSwitch
           type="button"
           variant="outline"
           disabled={isPending || isOAuthPending}
-          onClick={() => handleOAuthLogin('google')}
+          onClick={() => handleOpenOAuthModal('google')}
           className="h-10 border-border bg-background/50 hover:bg-violet-500/10 hover:border-violet-500/30 rounded-xl text-xs font-semibold gap-2 transition-all cursor-pointer"
         >
           <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -239,7 +246,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ embedded = false, onSwitch
           type="button"
           variant="outline"
           disabled={isPending || isOAuthPending}
-          onClick={() => handleOAuthLogin('github')}
+          onClick={() => handleOpenOAuthModal('github')}
           className="h-10 border-border bg-background/50 hover:bg-violet-500/10 hover:border-violet-500/30 rounded-xl text-xs font-semibold gap-2 transition-all cursor-pointer"
         >
           <svg className="w-4 h-4 shrink-0 fill-current text-foreground" viewBox="0 0 24 24">
@@ -248,6 +255,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ embedded = false, onSwitch
           <span>GitHub</span>
         </Button>
       </div>
+
+      <OAuthModal
+        isOpen={isOAuthModalOpen}
+        provider={oauthProvider}
+        onClose={() => setIsOAuthModalOpen(false)}
+        onAuthenticateToken={handlePerformOAuthLoginToken}
+        isPending={isOAuthPending}
+      />
     </div>
   )
 

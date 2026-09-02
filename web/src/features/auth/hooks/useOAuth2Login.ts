@@ -11,51 +11,65 @@ import type { APIError } from '@/lib/api/apiClient'
 
 export interface OAuth2Payload {
   provider: string
-  email: string
+  token: string
+  email?: string
   name?: string
   avatar_url?: string
   provider_id?: string
-  token?: string
+}
+
+async function handleOAuthSuccess(tokenPair: TokenPair, navigate: ReturnType<typeof useNavigate>, fromLocation?: string) {
+  tokenStorage.setAccessToken(tokenPair.access_token)
+  if (tokenPair.refresh_token) {
+    tokenStorage.setRefreshToken(tokenPair.refresh_token)
+  }
+
+  try {
+    const user: User = await authApi.getCurrentUser()
+
+    useAuthStore.getState().setUser({
+      id: String(user.id),
+      email: user.email,
+      name: user.name || undefined,
+      avatarUrl: user.avatar_url || undefined,
+    })
+    useAuthStore.getState().setAuthenticated(true)
+    useAuthStore.getState().setInitialized(true)
+
+    queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser })
+
+    const targetPath = fromLocation || ROUTES.APP.DASHBOARD
+    navigate(targetPath, { replace: true })
+  } catch (profileError) {
+    tokenStorage.clearTokens()
+    useAuthStore.getState().clearAuth()
+    throw profileError
+  }
 }
 
 export function useOAuth2Login() {
   const navigate = useNavigate()
   const location = useLocation()
-
   const fromLocation = (location.state as { from?: { pathname: string } })?.from?.pathname
 
   return useMutation<TokenPair, APIError, OAuth2Payload>({
     mutationFn: (payload: OAuth2Payload) => authApi.loginWithOAuth(payload),
     retry: false,
-    onSuccess: async (tokenPair: TokenPair) => {
-      tokenStorage.setAccessToken(tokenPair.access_token)
-      if (tokenPair.refresh_token) {
-        tokenStorage.setRefreshToken(tokenPair.refresh_token)
-      }
+    onSuccess: (tokenPair: TokenPair) => handleOAuthSuccess(tokenPair, navigate, fromLocation),
+  })
+}
 
-      try {
-        const user: User = await authApi.getCurrentUser()
+export function useGitHubCodeLogin() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const fromLocation = (location.state as { from?: { pathname: string } })?.from?.pathname
 
-        useAuthStore.getState().setUser({
-          id: String(user.id),
-          email: user.email,
-          name: user.name || undefined,
-          avatarUrl: user.avatar_url || undefined,
-        })
-        useAuthStore.getState().setAuthenticated(true)
-        useAuthStore.getState().setInitialized(true)
-
-        queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser })
-
-        const targetPath = fromLocation || ROUTES.APP.DASHBOARD
-        navigate(targetPath, { replace: true })
-      } catch (profileError) {
-        tokenStorage.clearTokens()
-        useAuthStore.getState().clearAuth()
-        throw profileError
-      }
-    },
+  return useMutation<TokenPair, APIError, string>({
+    mutationFn: (code: string) => authApi.loginWithGitHubCode(code),
+    retry: false,
+    onSuccess: (tokenPair: TokenPair) => handleOAuthSuccess(tokenPair, navigate, fromLocation),
   })
 }
 
 export default useOAuth2Login
+

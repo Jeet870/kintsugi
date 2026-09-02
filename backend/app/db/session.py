@@ -16,6 +16,16 @@ logger = logging.getLogger("kintsugi.db")
 
 # SQLAlchemy Engine Configuration for PostgreSQL / SQLite
 def create_app_engine():
+    import os
+    if os.getenv("ENV") == "testing" or os.getenv("TESTING") == "1":
+        sqlite_url = "sqlite:///./kintsugi.db"
+        logger.info(f"Test mode detected, using SQLite database engine: {sqlite_url}")
+        return create_engine(
+            sqlite_url,
+            connect_args={"check_same_thread": False},
+            future=True
+        )
+
     try:
         db_url = settings.DATABASE_URL
         if db_url.startswith("postgresql"):
@@ -25,7 +35,8 @@ def create_app_engine():
                 pool_recycle=3600,
                 pool_size=10,
                 max_overflow=20,
-                pool_timeout=5,
+                pool_timeout=2,
+                connect_args={"connect_timeout": 2},
                 echo=False,
                 future=True,
             )

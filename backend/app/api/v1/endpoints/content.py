@@ -157,27 +157,29 @@ def get_daily_quote(
     import urllib.request
     import json
 
-    # 1. Try Quotable API
-    try:
-        url = "https://api.quotable.io/quotes/random" if random else "https://api.quotable.io/random"
-        req = urllib.request.Request(url, headers={"User-Agent": "Kintsugi/1.0"})
-        with urllib.request.urlopen(req, timeout=3) as res:
-            if res.status == 200:
-                data = json.loads(res.read().decode("utf-8"))
-                quote_obj = data[0] if isinstance(data, list) and data else data
-                if quote_obj and "content" in quote_obj:
-                    quote_text = quote_obj["content"]
-                    author = quote_obj.get("author", "Anonymous")
-                    tags = quote_obj.get("tags", [])
-                    category = tags[0] if tags else "inspiration"
-                    return ContentItemOut(
-                        id=1,
-                        type=ContentType.QUOTE,
-                        text=f"{quote_text} — {author}",
-                        category=category,
-                    )
-    except Exception:
-        pass
+    # 1. Try Quotable API (skip in test environment for fast local execution)
+    import os
+    if os.getenv("TESTING") != "1":
+        try:
+            url = "https://api.quotable.io/quotes/random" if random else "https://api.quotable.io/random"
+            req = urllib.request.Request(url, headers={"User-Agent": "Kintsugi/1.0"})
+            with urllib.request.urlopen(req, timeout=1) as res:
+                if res.status == 200:
+                    data = json.loads(res.read().decode("utf-8"))
+                    quote_obj = data[0] if isinstance(data, list) and data else data
+                    if quote_obj and "content" in quote_obj:
+                        quote_text = quote_obj["content"]
+                        author = quote_obj.get("author", "Anonymous")
+                        tags = quote_obj.get("tags", [])
+                        category = tags[0] if tags else "inspiration"
+                        return ContentItemOut(
+                            id=1,
+                            type=ContentType.QUOTE,
+                            text=f"{quote_text} — {author}",
+                            category=category,
+                        )
+        except Exception:
+            pass
 
     # 2. Database Fallback
     import random as random_module

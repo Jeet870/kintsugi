@@ -9,8 +9,14 @@ export const API_ENDPOINTS = {
   AUTH: {
     REGISTER: '/auth/register',
     LOGIN: '/auth/login',
+    OAUTH_LOGIN: '/auth/oauth/login',
+    OAUTH_CONFIG: '/auth/oauth/config',
+    OAUTH_GITHUB_CODE: '/auth/oauth/github/code',
     REFRESH: '/auth/refresh',
     LOGOUT: '/auth/logout',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    VERIFY_RESET_OTP: '/auth/verify-reset-otp',
+    RESET_PASSWORD: '/auth/reset-password',
   },
 
   USERS: {

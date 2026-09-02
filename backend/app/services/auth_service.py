@@ -60,9 +60,13 @@ class AuthService:
         """
         email_clean = email.strip().lower()
         user = user_repository.get_by_email(db, email=email_clean)
-        if not user or not verify_password(password, user.password_hash):
+        if not user:
+            logger.warning(f"Authentication attempt for non-existent email: {email_clean}")
+            raise UnauthorizedException("No account found with this email address. Please register first.")
+
+        if not verify_password(password, user.password_hash):
             logger.warning(f"Failed authentication attempt for email: {email_clean}")
-            raise UnauthorizedException("Invalid email or password")
+            raise UnauthorizedException("Incorrect password. Please verify your password and try again.")
 
         if not user.is_active:
             logger.warning(f"Authentication rejected for inactive user id={user.id}")
@@ -167,18 +171,101 @@ class AuthService:
         self,
         db: Session,
         provider: str,
-        email: str,
+        token: str,
+        email: Optional[str] = None,
         name: Optional[str] = None,
         avatar_url: Optional[str] = None,
         provider_id: Optional[str] = None,
     ) -> User:
         """
         Authenticates or provisions a user authenticated via OAuth2 (Google, GitHub, etc.).
-        If the user with matching email exists, connects/updates profile and returns the user.
-        If user does not exist, registers a new OAuth2 account and returns the user.
+        Validates provider identity and tokens exclusively via official OAuth verification APIs.
         """
-        email_clean = email.strip().lower()
-        user = user_repository.get_by_email(db, email=email_clean)
+        if not token or not token.strip():
+            raise UnauthorizedException(
+                "OAuth2 authentication requires a valid OAuth token issued by the provider (Google/GitHub)."
+            )
+
+        provider_clean = provider.strip().lower()
+        verified_email: Optional[str] = email.strip().lower() if email else None
+        verified_name: Optional[str] = name.strip() if name else None
+        verified_avatar: Optional[str] = avatar_url
+
+        import httpx
+
+        if provider_clean == "google":
+            try:
+                # 1. Try Google tokeninfo for ID token validation
+                resp = httpx.get(
+                    f"https://oauth2.googleapis.com/tokeninfo?id_token={token}",
+                    timeout=10.0
+                )
+                if resp.status_code != 200:
+                    # 2. Try Google userinfo for access token validation
+                    resp = httpx.get(
+                        "https://www.googleapis.com/oauth2/v3/userinfo",
+                        headers={"Authorization": f"Bearer {token}"},
+                        timeout=10.0
+                    )
+                
+                if resp.status_code == 200:
+                    data = resp.json()
+                    verified_email = data.get("email") or verified_email
+                    verified_name = data.get("name") or verified_name
+                    verified_avatar = data.get("picture") or verified_avatar
+                    
+                    email_verified = data.get("email_verified")
+                    if email_verified is False or str(email_verified).lower() == "false":
+                        raise UnauthorizedException("Google email address is not verified by Google.")
+                else:
+                    logger.warning(f"Google OAuth token verification failed: status={resp.status_code}")
+                    raise UnauthorizedException("Invalid or expired Google OAuth credential. Failed Google identity verification.")
+            except Exception as err:
+                if isinstance(err, UnauthorizedException):
+                    raise err
+                logger.error(f"Error during Google OAuth token verification: {err}")
+                raise UnauthorizedException(f"Failed to verify Google OAuth credential: {err}")
+
+        elif provider_clean == "github":
+            try:
+                headers = {"Authorization": f"Bearer {token}", "User-Agent": "Kintsugi-App"}
+                resp = httpx.get("https://api.github.com/user", headers=headers, timeout=10.0)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    verified_email = data.get("email") or verified_email
+                    verified_name = data.get("name") or data.get("login") or verified_name
+                    verified_avatar = data.get("avatar_url") or verified_avatar
+                    
+                    # If primary email is private in GitHub settings, query /user/emails
+                    if not verified_email:
+                        emails_resp = httpx.get("https://api.github.com/user/emails", headers=headers, timeout=10.0)
+                        if emails_resp.status_code == 200:
+                            emails_data = emails_resp.json()
+                            for email_obj in emails_data:
+                                if email_obj.get("primary") and email_obj.get("verified"):
+                                    verified_email = email_obj.get("email")
+                                    break
+                            if not verified_email and emails_data:
+                                verified_email = emails_data[0].get("email")
+                else:
+                    logger.warning(f"GitHub OAuth token verification failed: status={resp.status_code}")
+                    raise UnauthorizedException("Invalid or expired GitHub OAuth token. Failed GitHub identity verification.")
+            except Exception as err:
+                if isinstance(err, UnauthorizedException):
+                    raise err
+                logger.error(f"Error during GitHub OAuth token verification: {err}")
+                raise UnauthorizedException(f"Failed to verify GitHub OAuth credential: {err}")
+        else:
+            raise UnauthorizedException(f"Unsupported OAuth provider: '{provider}'")
+
+        if not verified_email:
+            raise UnauthorizedException(
+                f"OAuth verification failed: No verified email address was returned by {provider.capitalize()}."
+            )
+
+        verified_email = verified_email.strip().lower()
+
+        user = user_repository.get_by_email(db, email=verified_email)
 
         if user:
             if not user.is_active:
@@ -186,28 +273,64 @@ class AuthService:
                 raise ForbiddenException("User account is inactive")
 
             updates = {"last_login_at": datetime.now(timezone.utc)}
-            if avatar_url and not user.avatar_url:
-                updates["avatar_url"] = avatar_url
-            if name and not user.name:
-                updates["name"] = name.strip()
+            if verified_avatar and not user.avatar_url:
+                updates["avatar_url"] = verified_avatar
+            if verified_name and not user.name:
+                updates["name"] = verified_name
 
             user = user_repository.update(db, db_obj=user, obj_in=updates)
-            logger.info(f"Existing user authenticated via OAuth ({provider}): id={user.id}")
+            logger.info(f"Existing user authenticated via verified OAuth ({provider_clean}): id={user.id}, email={verified_email}")
             return user
 
-        # Provision new user for OAuth login
-        random_password = hash_password(f"OAuth2_{provider}_{email_clean}_{datetime.now(timezone.utc).timestamp()}")
-        user_name = name.strip() if name else email_clean.split("@")[0].capitalize()
+        # Provision new user for verified OAuth identity
+        random_password = hash_password(f"OAuth2_{provider_clean}_{verified_email}_{datetime.now(timezone.utc).timestamp()}")
+        user_name = verified_name if verified_name else verified_email.split("@")[0].capitalize()
         user_data = {
-            "email": email_clean,
+            "email": verified_email,
             "name": user_name,
             "password_hash": random_password,
-            "avatar_url": avatar_url,
+            "avatar_url": verified_avatar,
         }
         user = user_repository.create(db, obj_in=user_data)
-        logger.info(f"New user provisioned via OAuth ({provider}): id={user.id}")
+        logger.info(f"New user provisioned via verified OAuth ({provider_clean}): id={user.id}, email={verified_email}")
         return user
+
+    def exchange_github_code(self, db: Session, code: str) -> User:
+        """
+        Exchanges GitHub authorization code for an access token, verifies user identity, and authenticates user.
+        """
+        if not settings.GITHUB_CLIENT_ID:
+            raise UnauthorizedException("GitHub OAuth Client ID is not configured on the backend server.")
+
+        import httpx
+        try:
+            resp = httpx.post(
+                "https://github.com/login/oauth/access_token",
+                json={
+                    "client_id": settings.GITHUB_CLIENT_ID,
+                    "client_secret": settings.GITHUB_CLIENT_SECRET,
+                    "code": code,
+                },
+                headers={"Accept": "application/json"},
+                timeout=10.0,
+            )
+            if resp.status_code != 200:
+                raise UnauthorizedException("Failed to exchange GitHub authorization code.")
+
+            token_data = resp.json()
+            access_token = token_data.get("access_token")
+            if not access_token:
+                error_desc = token_data.get("error_description") or "Invalid authorization code or client secret"
+                raise UnauthorizedException(f"GitHub OAuth code exchange failed: {error_desc}")
+
+            return self.authenticate_oauth_user(db, provider="github", token=access_token)
+        except Exception as err:
+            if isinstance(err, UnauthorizedException):
+                raise err
+            logger.error(f"Error during GitHub code exchange: {err}")
+            raise UnauthorizedException(f"Failed to authenticate with GitHub: {err}")
 
 
 auth_service = AuthService()
+
 

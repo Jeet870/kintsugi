@@ -310,9 +310,21 @@ Format each line as: TIP: [text]"""
                 quote_dict = dynamic_quotes[day_idx % len(dynamic_quotes)]
 
             if not affirmations:
-                affirmations = self.generate_ai_affirmations(5)
+                affirmations = [
+                    {"text": "Like Kintsugi, my scars and struggles make me stronger, unique, and resilient.", "category": "resilience"},
+                    {"text": "I am growing and evolving every single day, one step at a time.", "category": "growth"},
+                    {"text": "I give myself permission to rest and recharge without any guilt.", "category": "self-compassion"},
+                    {"text": "My feelings are valid, and I honor my personal emotional journey.", "category": "self-awareness"},
+                    {"text": "I choose to focus on what I can control and release what I cannot.", "category": "mindfulness"},
+                ]
             if not tips:
-                tips = self.generate_ai_self_care_tips(5)
+                tips = [
+                    {"text": "Pause, inhale, exhale. Reset your mind and body with 5 slow deep breaths.", "category": "mindfulness"},
+                    {"text": "Hydration is self-care. Drink a fresh glass of water right now.", "category": "wellness"},
+                    {"text": "A little movement can lift your mood and clear your mind. Go for a short walk.", "category": "activity"},
+                    {"text": "Focus on what's good. Write down three small things you are grateful for today.", "category": "gratitude"},
+                    {"text": "Unplug for 15 minutes. Step away from digital screens and rest your eyes.", "category": "rest"},
+                ]
 
             return {
                 "quote": quote_dict["text"],

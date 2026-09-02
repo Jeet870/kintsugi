@@ -86,6 +86,8 @@ frontend/*.dex
 frontend/.kotlin/
 
 # Database / Export Backups
+*.db
+backend/*.db
 database/backups/*.sql
 exports/*.pdf
 exports/*.json

@@ -21,11 +21,11 @@ def _bg_generate_ai_message(entry_id: int, user_id: int, mood_str: str, note: Op
     """Background worker thread function to generate AI message and broadcast realtime WS event if missing."""
     db = SessionLocal()
     try:
-        from app.services.ai_service import ai_service
-        ai_msg = ai_service.generate_mood_message(mood_type=mood_str, note=note)
         entry = mood_repository.get(db, id=entry_id)
         if entry:
             if not entry.ai_message:
+                from app.services.ai_service import ai_service
+                ai_msg = ai_service.generate_mood_message(mood_type=mood_str, note=note)
                 entry = mood_repository.update(db, db_obj=entry, obj_in={"ai_message": ai_msg})
                 logger.info(f"Background thread generated AI message for entry id={entry_id}")
             
@@ -100,6 +100,9 @@ class MoodService:
         """
         Safely dispatches Celery background tasks without failing the primary HTTP request.
         """
+        import os
+        if os.getenv("TESTING") == "1":
+            return
         try:
             from app.workers.tasks.streak_tasks import recalculate_streak_task
             recalculate_streak_task.delay(user_id)

@@ -228,6 +228,9 @@ class MistralClient:
         """
         Synchronous wrapper adapter for generate_chat_response supporting thread-pool execution.
         """
+        if not self.api_key or not self.api_key.strip():
+            return self._generate_dynamic_fallback(messages)
+
         try:
             try:
                 loop = asyncio.get_running_loop()

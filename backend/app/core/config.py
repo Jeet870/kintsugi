@@ -4,8 +4,18 @@ Loads, validates, and caches environment variables using pydantic-settings.
 """
 from typing import List, Union
 from functools import lru_cache
+from pathlib import Path
+from dotenv import load_dotenv
 from pydantic import AnyHttpUrl, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Load .env file from root backend directory
+env_path = Path(__file__).resolve().parent.parent.parent / ".env"
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path)
+else:
+    load_dotenv()
+
 
 
 class Settings(BaseSettings):
@@ -43,6 +53,12 @@ class Settings(BaseSettings):
     ALGORITHM: str = Field(default="HS256")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=30)
     REFRESH_TOKEN_EXPIRE_DAYS: int = Field(default=7)
+
+    # OAuth2 Social Authentication Configuration
+    GOOGLE_CLIENT_ID: str = Field(default="")
+    GOOGLE_CLIENT_SECRET: str = Field(default="")
+    GITHUB_CLIENT_ID: str = Field(default="")
+    GITHUB_CLIENT_SECRET: str = Field(default="")
 
     # Celery & Redis Task Queue Configuration
     REDIS_URL: str = Field(default="redis://localhost:6379/1")

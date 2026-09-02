@@ -7,8 +7,9 @@ from fastapi import APIRouter, Depends, status, Request, HTTPException
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, sensitive_rate_limiter
-from app.schemas.user import UserCreate, UserOut, TokenPair, RefreshTokenRequest, OAuth2LoginRequest
+from app.schemas.user import UserCreate, UserOut, TokenPair, RefreshTokenRequest, OAuth2LoginRequest, GitHubCodeExchangeRequest
 from app.services.auth_service import auth_service
+from app.core.config import settings
 
 router = APIRouter()
 
@@ -75,6 +76,20 @@ async def login(
     return auth_service.issue_token_pair(db, user=user)
 
 
+@router.get(
+    "/oauth/config",
+    summary="Retrieve public OAuth client IDs for Google and GitHub",
+)
+def get_oauth_config() -> dict:
+    """
+    Returns public OAuth client IDs configured on the backend server.
+    """
+    return {
+        "google_client_id": settings.GOOGLE_CLIENT_ID,
+        "github_client_id": settings.GITHUB_CLIENT_ID,
+    }
+
+
 @router.post(
     "/oauth/login",
     response_model=TokenPair,
@@ -86,18 +101,37 @@ def oauth_login(
     db: Session = Depends(get_db),
 ) -> TokenPair:
     """
-    OAuth2 Social Authentication flow. Accepts provider token or provider credentials,
+    OAuth2 Social Authentication flow. Accepts provider token (Google ID token or GitHub Access token),
     authenticates or provisions user account, and issues JWT access & refresh tokens.
     """
     user = auth_service.authenticate_oauth_user(
         db,
         provider=oauth_in.provider,
+        token=oauth_in.token,
         email=oauth_in.email,
         name=oauth_in.name,
         avatar_url=oauth_in.avatar_url,
         provider_id=oauth_in.provider_id,
     )
     return auth_service.issue_token_pair(db, user=user)
+
+
+@router.post(
+    "/oauth/github/code",
+    response_model=TokenPair,
+    summary="Exchange GitHub authorization code for user session",
+    dependencies=[Depends(sensitive_rate_limiter)],
+)
+def github_code_exchange(
+    req: GitHubCodeExchangeRequest,
+    db: Session = Depends(get_db),
+) -> TokenPair:
+    """
+    Exchanges GitHub OAuth authorization code for verified user session.
+    """
+    user = auth_service.exchange_github_code(db, code=req.code)
+    return auth_service.issue_token_pair(db, user=user)
+
 
 
 

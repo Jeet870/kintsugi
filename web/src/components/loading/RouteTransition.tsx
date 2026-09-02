@@ -63,7 +63,7 @@ export const RouteTransition: React.FC<RouteTransitionProps> = ({ children }) =>
     }, 100)
 
     return () => clearTimeout(timer)
-  }, [location.pathname])
+  }, [location.pathname, location.hash, location.search])
 
   return (
     <AnimatePresence>

@@ -37,14 +37,39 @@ export const authApi = {
   },
 
   /**
-   * Authenticate user via OAuth2 provider (Google, GitHub).
-   * Calls POST /api/v1/auth/oauth/login
+   * Retrieve public OAuth client configuration from backend.
+   * Calls GET /api/v1/auth/oauth/config
+   */
+  async getOAuthConfig(signal?: AbortSignal): Promise<{ google_client_id: string; github_client_id: string }> {
+    const response = await apiClient.get<{ google_client_id: string; github_client_id: string }>(
+      ENDPOINTS.AUTH.OAUTH_CONFIG,
+      { signal }
+    )
+    return response.data
+  },
+
+  /**
+   * Authenticate user via OAuth2 provider (Google ID token or GitHub Access token).
+   * Calls POST /api/v1/auth/oauth/login with mandatory token verification
    */
   async loginWithOAuth(
-    payload: { provider: string; email: string; name?: string; avatar_url?: string; provider_id?: string; token?: string },
+    payload: { provider: string; token: string; email?: string; name?: string; avatar_url?: string; provider_id?: string },
     signal?: AbortSignal
   ): Promise<TokenPair> {
-    const response = await apiClient.post<TokenPair>('/api/v1/auth/oauth/login', payload, { signal })
+    const response = await apiClient.post<TokenPair>(ENDPOINTS.AUTH.OAUTH_LOGIN, payload, { signal })
+    return response.data
+  },
+
+  /**
+   * Exchange GitHub OAuth authorization code for verified user session.
+   * Calls POST /api/v1/auth/oauth/github/code
+   */
+  async loginWithGitHubCode(code: string, signal?: AbortSignal): Promise<TokenPair> {
+    const response = await apiClient.post<TokenPair>(
+      ENDPOINTS.AUTH.OAUTH_GITHUB_CODE,
+      { code },
+      { signal }
+    )
     return response.data
   },
 
