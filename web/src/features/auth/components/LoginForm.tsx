@@ -86,6 +86,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ embedded = false, onSwitch
           toast.success(`Successfully authenticated via ${provider.toUpperCase()} OAuth2!`, {
             description: 'User identity and email ownership verified.',
           })
+          useLoadingStore.getState().show('Authenticating...')
+          setTimeout(() => {
+            useLoadingStore.getState().hide()
+            navigate(ROUTES.APP.DASHBOARD, { replace: true })
+          }, 300)
         },
         onError: (err) => {
           toast.error(`OAuth2 verification failed`, {
