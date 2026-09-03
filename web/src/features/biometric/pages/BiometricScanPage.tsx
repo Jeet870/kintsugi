@@ -229,7 +229,6 @@ export function BiometricScanPage() {
 
   /* Pretrained Micro-Expression ML Classifier Model Simulation */
   const runPretrainedMLClassification = (): MoodPrediction => {
-    /* Feature vector selection based on image data/frame sampling */
     const moodCandidates: MoodPrediction[] = [
       {
         moodType: 'happy',
