@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 
 import { JournalList } from '../components/JournalList'
 import { JournalEditor } from '../components/JournalEditor'
+import { useJournalEntries } from '../hooks/useJournalEntries'
 import type { JournalEntry } from '@/types/api'
 import { Sparkles } from 'lucide-react'
 import { SemanticSearchModal } from '@/features/ml/components/SemanticSearchModal'
@@ -14,6 +15,7 @@ import { SemanticSearchModal } from '@/features/ml/components/SemanticSearchModa
 export type ViewMode = 'list' | 'editor'
 
 export const JournalPage: React.FC = () => {
+  const { data: entriesData } = useJournalEntries({ userId: 'me' })
   /* Local View Navigation State */
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null)
   const [activeSessionKey, setActiveSessionKey] = useState<string>(() => 'session-new-' + Date.now())
@@ -179,6 +181,7 @@ export const JournalPage: React.FC = () => {
       <SemanticSearchModal
         isOpen={isSemanticSearchOpen}
         onClose={() => setIsSemanticSearchOpen(false)}
+        entries={entriesData || []}
       />
     </div>
   )

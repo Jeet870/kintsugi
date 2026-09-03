@@ -54,7 +54,30 @@ export const mlApi = {
   },
 
   semanticSearch: async (query: string, entries: any[] = []): Promise<any> => {
-    const response = await apiClient.post('/ml/semantic-search', { query, entries });
-    return response.data;
+    try {
+      const response = await apiClient.post('/ml/semantic-search', { query, entries });
+      return response.data;
+    } catch (err) {
+      console.warn('Backend semantic search endpoint unavailable, using local text similarity fallback:', err);
+      const q = query.toLowerCase();
+      const words = q.split(/\s+/).filter(Boolean);
+      const scored = entries
+        .map((entry) => {
+          const text = `${entry.title || ''} ${entry.content || ''}`.toLowerCase().replace(/<[^>]*>?/gm, '');
+          let matches = 0;
+          words.forEach((w) => {
+            if (text.includes(w)) matches++;
+          });
+          const similarity = words.length > 0 ? Math.min(0.98, (matches / words.length) * 0.8 + 0.15) : 0.5;
+          return {
+            ...entry,
+            semantic_similarity_score: similarity,
+          };
+        })
+        .filter((e) => e.semantic_similarity_score > 0.1)
+        .sort((a, b) => b.semantic_similarity_score - a.semantic_similarity_score);
+
+      return { results: scored };
+    }
   }
 };
